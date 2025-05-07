@@ -80,8 +80,8 @@ local function checkAndBuyPunk()
 
     print("💰 ค่า Dr. Megga Punk =", punkCost)
 
-    if punkCost and punkCost <= 7000 then
-        print("🛒 Dr. Megga Punk ราคาไม่เกิน 7000, กำลังซื้อ 4 ครั้ง...")
+    if punkCost and punkCost <= 6500 then
+        print("🛒 Dr. Megga Punk ราคาไม่เกิน 6500, กำลังซื้อ 4 ครั้ง...")
 
         local merchantRemote = ReplicatedStorage:WaitForChild("Remote"):WaitForChild("Server")
             :WaitForChild("Gameplay"):WaitForChild("Merchant")
