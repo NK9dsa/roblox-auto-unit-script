@@ -47,5 +47,5 @@ end
 -- ลูปอัปเดตทุก 60 วินาที
 while true do
     updateGUI()
-    task.wait(60)
+    task.wait(1)
 end
