@@ -1,3 +1,4 @@
+loadstring(game:HttpGet('https://raw.githubusercontent.com/NK9dsa/roblox-auto-unit-script/refs/heads/main/Print%20GU.lua', true))()
 -- 🧠 อัปเกรดแค่ Ace
 local unitNameToUpgrade = "Ace"
 
