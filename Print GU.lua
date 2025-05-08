@@ -120,7 +120,7 @@ local function checkAndBuyPunk(punkPriceLabel)
         end
     else
         print("💸 Dr. Megga Punk แพงเกินไป หรือไม่สามารถอ่านราคาได้: " .. tostring(punkCostText))
-        punkPriceLabel.Text = "💸 Dr. Megga Punk แพงเกินไป"
+        punkPriceLabel.Text = "💸 Dr. Megga Punk แพงเกินไป: " .. punkCost .. " Gem"
     end
 end
 
