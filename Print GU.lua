@@ -53,11 +53,11 @@ local function setupItemCheckGUI()
         textLabel.Text = output
     end
 
-    -- เริ่มอัปเดตทุก 60 วินาที
+    -- เริ่มอัปเดตทุก 10 วินาที
     task.spawn(function()
         while true do
             updateGUI()
-            task.wait(60)
+            task.wait(10)
         end
     end)
 
