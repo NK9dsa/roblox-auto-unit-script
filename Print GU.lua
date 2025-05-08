@@ -59,10 +59,24 @@ local function setupItemCheckGUI()
             task.wait(60)
         end
     end)
+
+    -- สร้าง TextLabel สำหรับแสดงค่า Dr. Megga Punk
+    local punkPriceLabel = Instance.new("TextLabel")
+    punkPriceLabel.Size = UDim2.new(0.5, 0, 0.1, 0)
+    punkPriceLabel.Position = UDim2.new(0.5, 0, 0, 0)  -- ตั้งตำแหน่งให้ตรงกลางบน
+    punkPriceLabel.AnchorPoint = Vector2.new(0.5, 0)  -- ใช้ AnchorPoint เพื่อทำให้ตำแหน่งอยู่ตรงกลาง
+    punkPriceLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    punkPriceLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    punkPriceLabel.TextScaled = true
+    punkPriceLabel.Font = Enum.Font.SourceSans
+    punkPriceLabel.Text = "กำลังโหลดราคา Dr. Megga Punk..."
+    punkPriceLabel.Parent = screenGui
+
+    return punkPriceLabel
 end
 
 -- ตรวจสอบราคาและซื้อ Dr. Megga Punk
-local function checkAndBuyPunk()
+local function checkAndBuyPunk(punkPriceLabel)
     local merchantGui = playerGui:WaitForChild("Merchant")
     local base = merchantGui:WaitForChild("Main"):WaitForChild("Base")
     local scroll = base:WaitForChild("Main"):WaitForChild("ScrollingFrame")
@@ -78,7 +92,13 @@ local function checkAndBuyPunk()
     local cleanedText = punkCostText:gsub("[^%d]", "")
     local punkCost = tonumber(cleanedText)
 
-    print("💰 ค่า Dr. Megga Punk =", punkCost)
+    -- แสดงราคาภายใน GUI
+    if punkCost then
+        print("💰 ค่า Dr. Megga Punk =", punkCost)
+        punkPriceLabel.Text = "💰 ค่า Dr. Megga Punk: " .. punkCost .. " บาท"
+    else
+        punkPriceLabel.Text = "💸 ไม่สามารถอ่านราคาได้"
+    end
 
     if punkCost and punkCost <= 6500 then
         print("🛒 Dr. Megga Punk ราคาไม่เกิน 6500, กำลังซื้อ 4 ครั้ง...")
@@ -98,9 +118,10 @@ local function checkAndBuyPunk()
         end
     else
         print("💸 Dr. Megga Punk แพงเกินไป หรือไม่สามารถอ่านราคาได้: " .. tostring(punkCostText))
+        punkPriceLabel.Text = "💸 Dr. Megga Punk แพงเกินไป"
     end
 end
 
 -- เรียกใช้ฟังก์ชัน
-setupItemCheckGUI()
-checkAndBuyPunk()
+local punkPriceLabel = setupItemCheckGUI()
+checkAndBuyPunk(punkPriceLabel)
