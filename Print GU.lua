@@ -83,7 +83,9 @@ local function checkAndBuyPunk(punkPriceLabel)
     local punk = scroll:FindFirstChild("Dr. Megga Punk")
 
     if not punk then
-        warn("❌ ไม่พบ 'Dr. Megga Punk' ใน ScrollingFrame")
+        -- ถ้าไม่พบ Dr. Megga Punk ให้แจ้งใน GUI
+        punkPriceLabel.Text = "❌ Dr. Megga Punk ไม่ขายในเวลานี้"
+        print("❌ ไม่พบ 'Dr. Megga Punk' ใน ScrollingFrame")
         return
     end
 
