@@ -1,3 +1,4 @@
+wait(10)
 -- LocalScript ที่ StarterPlayerScripts
 local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
