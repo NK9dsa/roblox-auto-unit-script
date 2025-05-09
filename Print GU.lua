@@ -8,10 +8,7 @@ local placeId = game.PlaceId
 game:GetService("GuiService").ErrorMessageChanged:Connect(function(err)
     if err and err ~= "" then
         print("🚨 ตรวจพบ Error: " .. err)
-        
-        -- รอเล็กน้อยก่อนทำ Teleport
         task.wait(2)
-        
         print("🔄 กำลังพยายามรีจอยเซิร์ฟเวอร์...")
         TeleportService:Teleport(placeId, player)
     else
@@ -20,21 +17,16 @@ game:GetService("GuiService").ErrorMessageChanged:Connect(function(err)
 end)
 
 print("ป้องกันการหลุดแล้ว")
--- รอให้ LocalPlayer โหลดเสร็จ
-local player = game:GetService("Players").LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui") -- รอ PlayerGui โหลดเสร็จ
+
+local playerGui = player:WaitForChild("PlayerGui")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local playerData = ReplicatedStorage:WaitForChild("Player_Data"):WaitForChild(player.Name) -- รอ Player_Data โหลดเสร็จ
+local playerData = ReplicatedStorage:WaitForChild("Player_Data"):WaitForChild(player.Name)
 
--- เช็คและแสดง GUI ข้อมูลไอเทม
+-- GUI แสดงไอเทม
 local function setupItemCheckGUI()
-    -- ลบ GUI เดิมถ้ามี
     local existingGui = playerGui:FindFirstChild("ItemCheckGui")
-    if existingGui then
-        existingGui:Destroy()
-    end
+    if existingGui then existingGui:Destroy() end
 
-    -- สร้าง GUI ใหม่
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "ItemCheckGui"
     screenGui.ResetOnSpawn = false
@@ -48,6 +40,7 @@ local function setupItemCheckGUI()
     textLabel.TextScaled = true
     textLabel.Font = Enum.Font.Cartoon
     textLabel.Text = "กำลังโหลดข้อมูล..."
+    textLabel.FontFace.Weight = Enum.FontWeight.Bold
     textLabel.Parent = screenGui
 
     local items = {
@@ -75,7 +68,6 @@ local function setupItemCheckGUI()
         textLabel.Text = output
     end
 
-    -- เริ่มอัปเดตทุก 1 วินาที
     task.spawn(function()
         while true do
             updateGUI()
@@ -83,35 +75,36 @@ local function setupItemCheckGUI()
         end
     end)
 
-    -- สร้าง TextLabel สำหรับแสดงราคา Dr. Megga Punk
-    local punkPriceLabel = Instance.new("TextLabel")
-    punkPriceLabel.Size = UDim2.new(0.5, 0, 0.1, 0)
-    punkPriceLabel.Position = UDim2.new(0.5, 0, 0, 0)
-    punkPriceLabel.AnchorPoint = Vector2.new(0.5, 0)
-    punkPriceLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    punkPriceLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    punkPriceLabel.TextScaled = true
-    punkPriceLabel.Font = Enum.Font.Cartoon
-    punkPriceLabel.Text = "กำลังโหลดราคา Dr. Megga Punk..."
-    punkPriceLabel.Parent = screenGui
+    local function createInfoLabel(yPosition)
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(0.5, 0, 0.1, 0)
+        label.Position = UDim2.new(0.5, 0, yPosition, 0)
+        label.AnchorPoint = Vector2.new(0.5, 0)
+        label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.TextScaled = true
+        label.Font = Enum.Font.Cartoon
+        label.FontFace.Weight = Enum.FontWeight.Bold
+        label.Text = "กำลังโหลด..."
+        label.Parent = screenGui
+        return label
+    end
 
-    -- สร้าง TextLabel สำหรับ Trait Reroll
-    local rerollLabel = Instance.new("TextLabel")
-    rerollLabel.Size = UDim2.new(0.5, 0, 0.1, 0)
-    rerollLabel.Position = UDim2.new(0.5, 0, 0.1, 0)
-    rerollLabel.AnchorPoint = Vector2.new(0.5, 0)
-    rerollLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    rerollLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    rerollLabel.TextScaled = true
-    rerollLabel.Font = Enum.Font.Cartoon
-    rerollLabel.Text = "กำลังโหลดราคา Trait Reroll..."
-    rerollLabel.Parent = screenGui
+    local punkPriceLabel = createInfoLabel(0)
+    local rerollLabel = createInfoLabel(0.1)
 
     return punkPriceLabel, rerollLabel
 end
 
--- ตรวจสอบและซื้อไอเทมตามชื่อและราคาสูงสุด
+-- ตรวจสอบและซื้อไอเทม
 local function checkAndBuyItem(itemName, maxPrice, label)
+    local gemValue = playerData:WaitForChild("Data"):WaitForChild("Gem").Value
+    if gemValue == 37500 then
+        print("⛔ หยุดซื้อเพราะ Gem เท่ากับ 37500")
+        label.Text = "⛔ หยุดซื้อ " .. itemName .. " เพราะ Gem เท่ากับ 37500"
+        return
+    end
+
     local merchantGui = playerGui:WaitForChild("Merchant")
     local base = merchantGui:WaitForChild("Main"):WaitForChild("Base")
     local scroll = base:WaitForChild("Main"):WaitForChild("ScrollingFrame")
@@ -158,7 +151,7 @@ local function checkAndBuyItem(itemName, maxPrice, label)
     end
 end
 
--- เรียกใช้ฟังก์ชัน
+-- เรียกใช้งาน
 local punkPriceLabel, rerollLabel = setupItemCheckGUI()
 checkAndBuyItem("Dr. Megga Punk", 6500, punkPriceLabel)
 checkAndBuyItem("Trait Reroll", 800, rerollLabel)
