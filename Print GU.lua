@@ -153,5 +153,5 @@ end
 
 -- เรียกใช้งาน
 local punkPriceLabel, rerollLabel = setupItemCheckGUI()
-checkAndBuyItem("Dr. Megga Punk", 8500, punkPriceLabel)
-checkAndBuyItem("Trait Reroll", 800, rerollLabel)
+checkAndBuyItem("Dr. Megga Punk", 8000, punkPriceLabel)
+checkAndBuyItem("Trait Reroll", 1, rerollLabel)
