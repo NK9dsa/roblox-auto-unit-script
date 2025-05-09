@@ -1,3 +1,24 @@
+-- LocalScript ที่ StarterPlayerScripts
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local placeId = game.PlaceId
+
+game:GetService("GuiService").ErrorMessageChanged:Connect(function(err)
+    if err and err ~= "" then
+        print("🚨 ตรวจพบ Error: " .. err)
+        
+        -- รอเล็กน้อยก่อนทำ Teleport
+        task.wait(2)
+        
+        print("🔄 กำลังพยายามรีจอยเซิร์ฟเวอร์...")
+        TeleportService:Teleport(placeId, player)
+    else
+        print("✅ ไม่มี Error, ทุกอย่างปกติ")
+    end
+end)
+
+print("ป้องกันการหลุดแล้ว")
 -- รอให้ LocalPlayer โหลดเสร็จ
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui") -- รอ PlayerGui โหลดเสร็จ
