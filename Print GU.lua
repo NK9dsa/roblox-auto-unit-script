@@ -46,7 +46,7 @@ local function setupItemCheckGUI()
     textLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     textLabel.TextScaled = true
-    textLabel.Font = Enum.Font.SourceSans
+    textLabel.Font = Enum.Font.Cartoon
     textLabel.Text = "กำลังโหลดข้อมูล..."
     textLabel.Parent = screenGui
 
@@ -91,7 +91,7 @@ local function setupItemCheckGUI()
     punkPriceLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     punkPriceLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     punkPriceLabel.TextScaled = true
-    punkPriceLabel.Font = Enum.Font.SourceSans
+    punkPriceLabel.Font = Enum.Font.Cartoon
     punkPriceLabel.Text = "กำลังโหลดราคา Dr. Megga Punk..."
     punkPriceLabel.Parent = screenGui
 
@@ -103,7 +103,7 @@ local function setupItemCheckGUI()
     rerollLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     rerollLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     rerollLabel.TextScaled = true
-    rerollLabel.Font = Enum.Font.SourceSans
+    rerollLabel.Font = Enum.Font.Cartoon
     rerollLabel.Text = "กำลังโหลดราคา Trait Reroll..."
     rerollLabel.Parent = screenGui
 
