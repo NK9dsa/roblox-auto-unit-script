@@ -1,4 +1,42 @@
 wait(10)
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local placeId = game.PlaceId
+
+local shouldTeleport = false
+
+-- เช็กเงื่อนไข InfinityCastle
+task.spawn(function()
+    while true do
+        if workspace:FindFirstChild("Lobby") and
+           workspace.Lobby:FindFirstChild("Leaderboards") and
+           workspace.Lobby.Leaderboards:FindFirstChild("InfinityCastle") then
+            print("✅ พบ InfinityCastle")
+            shouldTeleport = true
+            break
+        end
+        task.wait(1)
+    end
+end)
+
+-- นับเวลา 40 วินาที
+task.delay(40, function()
+    print("⏰ อยู่เซิร์ฟเวอร์เกิน 40 วินาทีแล้ว")
+    shouldTeleport = true
+end)
+
+-- วนรอตรวจว่าเข้าเงื่อนไข
+task.spawn(function()
+    while true do
+        if shouldTeleport then
+            print("🔄 วาร์ปไปเซิร์ฟใหม่...")
+            TeleportService:Teleport(placeId, player)
+            break
+        end
+        task.wait(1)
+    end
+end)
 
 -- 📦 Services
 local TeleportService = game:GetService("TeleportService")
