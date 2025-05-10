@@ -1,3 +1,4 @@
+wait(7)
 task.spawn(function()
     local function upgradeUnit(unit, times)
         for i = 1, times do
