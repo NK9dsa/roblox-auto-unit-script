@@ -1,11 +1,16 @@
 wait(10)
--- LocalScript ที่ StarterPlayerScripts
+
+-- 📦 Services
 local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local GuiService = game:GetService("GuiService")
 local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 local placeId = game.PlaceId
 
-game:GetService("GuiService").ErrorMessageChanged:Connect(function(err)
+-- ⛑️ ป้องกันหลุด และรีจอยหากพบ Error
+GuiService.ErrorMessageChanged:Connect(function(err)
     if err and err ~= "" then
         print("🚨 ตรวจพบ Error: " .. err)
         task.wait(2)
@@ -16,13 +21,34 @@ game:GetService("GuiService").ErrorMessageChanged:Connect(function(err)
     end
 end)
 
-print("ป้องกันการหลุดแล้ว")
+print("📌 ระบบป้องกันหลุดทำงานแล้ว")
 
-local playerGui = player:WaitForChild("PlayerGui")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- 🧠 รีจอยอัตโนมัติหลัง 35 นาที (2100 วินาที)
+task.spawn(function()
+    task.wait(2100)
+    print("⏰ ครบ 35 นาทีแล้ว ทำการรีจอย")
+    TeleportService:Teleport(placeId, player)
+end)
+
+-- 💤 Anti-AFK
+local VirtualUser = game:service("VirtualUser")
+player.Idled:connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+-- 🔁 Backup click ทุก 5 นาที
+task.spawn(function()
+    while true do
+        wait(300)
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+    end
+end)
+
+-- 📊 GUI เช็คไอเทม
 local playerData = ReplicatedStorage:WaitForChild("Player_Data"):WaitForChild(player.Name)
 
--- GUI แสดงไอเทม
 local function setupItemCheckGUI()
     local existingGui = playerGui:FindFirstChild("ItemCheckGui")
     if existingGui then existingGui:Destroy() end
@@ -37,10 +63,12 @@ local function setupItemCheckGUI()
     textLabel.Position = UDim2.new(0.25, 0, 0.2, 0)
     textLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.BackgroundTransparency = 0.5
+    textLabel.TextTransparency = 0.5
     textLabel.TextScaled = true
     textLabel.Font = Enum.Font.Cartoon
-    textLabel.Text = "กำลังโหลดข้อมูล..."
     textLabel.FontFace.Weight = Enum.FontWeight.Bold
+    textLabel.Text = "กำลังโหลดข้อมูล..."
     textLabel.Parent = screenGui
 
     local items = {
@@ -82,6 +110,8 @@ local function setupItemCheckGUI()
         label.AnchorPoint = Vector2.new(0.5, 0)
         label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
         label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.BackgroundTransparency = 0.5
+        label.TextTransparency = 0.5
         label.TextScaled = true
         label.Font = Enum.Font.Cartoon
         label.FontFace.Weight = Enum.FontWeight.Bold
@@ -96,7 +126,7 @@ local function setupItemCheckGUI()
     return punkPriceLabel, rerollLabel
 end
 
--- ตรวจสอบและซื้อไอเทม
+-- 🛍️ ตรวจสอบและซื้อไอเทม
 local function checkAndBuyItem(itemName, maxPrice, label)
     local gemValue = playerData:WaitForChild("Data"):WaitForChild("Gem").Value
     if gemValue == 37500 then
@@ -151,7 +181,7 @@ local function checkAndBuyItem(itemName, maxPrice, label)
     end
 end
 
--- เรียกใช้งาน
+-- ▶️ เริ่มต้น GUI + ตรวจสอบการซื้อ
 local punkPriceLabel, rerollLabel = setupItemCheckGUI()
 checkAndBuyItem("Dr. Megga Punk", 8000, punkPriceLabel)
-checkAndBuyItem("Trait Reroll", 1, rerollLabel)
+checkAndBuyItem("Trait Reroll", 800, rerollLabel)
