@@ -1,34 +1,4 @@
 wait(10)
-if workspace:FindFirstChild("Lobby") and
-   workspace.Lobby:FindFirstChild("Leaderboards") and
-   workspace.Lobby.Leaderboards:FindFirstChild("InfinityCastle") then
-
-    print("เจอ InfinityCastle แล้ว เริ่มนับถอยหลัง 10 วินาที")
-
-    local countdown = 10
-
-    while countdown > 0 do
-        print("เหลือเวลา: " .. countdown .. " วินาที")
-        wait(1)
-        countdown = countdown - 1
-    end
-
-    -- รัน "Easter-Event"
-    local args = {
-        [1] = "Easter-Event"
-    }
-    game:GetService("ReplicatedStorage").Remote.Server.PlayRoom.Challenge:FireServer(unpack(args))
-
-    -- รอ 1 วินาที แล้วรัน "Start"
-    wait(1)
-    local startArgs = {
-        [1] = "Start"
-    }
-    game:GetService("ReplicatedStorage").Remote.Server.PlayRoom.Challenge:FireServer(unpack(startArgs))
-else
-    print("ไม่พบ InfinityCastle")
-end
-
 -- 📦 Services
 local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
