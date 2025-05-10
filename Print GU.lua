@@ -1,4 +1,4 @@
-wait(10)
+wait(15)
 -- 📦 Services
 local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
@@ -21,13 +21,6 @@ GuiService.ErrorMessageChanged:Connect(function(err)
 end)
 
 print("📌 ระบบป้องกันหลุดทำงานแล้ว")
-
--- 🧠 รีจอยอัตโนมัติหลัง 35 นาที (2100 วินาที)
-task.spawn(function()
-    task.wait(2100)
-    print("⏰ ครบ 35 นาทีแล้ว ทำการรีจอย")
-    TeleportService:Teleport(placeId, player)
-end)
 
 -- 💤 Anti-AFK
 local VirtualUser = game:service("VirtualUser")
