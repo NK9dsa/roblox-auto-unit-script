@@ -171,7 +171,7 @@ local function setupCompactStatusGUI()
 
     -- เรียกใช้ฟังก์ชันเช็คไอเทมสำหรับ Dr. Megga Punk และ Trait Reroll
     checkAndBuyItem("Dr. Megga Punk", 8000, punkLabel)
-    checkAndBuyItem("Trait Reroll", 800, rerollLabel)
+    checkAndBuyItem("Trait Reroll", 900, rerollLabel)
 
     -- เรียกเช็คและอัพเดตข้อมูลไอเทมใน GUI
     checkAndUpdateItems()
