@@ -175,6 +175,14 @@ local function setupCompactStatusGUI()
 
     -- เรียกเช็คและอัพเดตข้อมูลไอเทมใน GUI
     checkAndUpdateItems()
+
+    -- ▶️ อัพเดทข้อมูลทุกๆ 1 วินาที
+    task.spawn(function()
+        while true do
+            wait(1)  -- รอ 1 วินาที
+            checkAndUpdateItems()  -- เรียกฟังก์ชันเพื่ออัพเดทข้อมูลใน GUI
+        end
+    end)
 end
 
 -- ▶️ เริ่มต้น GUI และแสดงผล
