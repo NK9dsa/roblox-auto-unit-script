@@ -6,6 +6,16 @@ task.spawn(function()
         end
     end
 
+    local function deployUnit(unitName, unitsFolder)
+        local unit = unitsFolder:FindFirstChild(unitName) or unitsFolder:FindFirstChild(unitName:gsub(":", ""))
+        if unit then
+            game.ReplicatedStorage.Remote.Server.Units.Deployment:FireServer(unit)
+            print("✅ ปล่อยยูนิต: " .. unitName)
+        else
+            warn("⚠️ ไม่พบยูนิตใน UnitsFolder: " .. unitName)
+        end
+    end
+
     wait(1)
     getgenv().key = {23165,60422,19160,81028,55939,42326}
     loadstring(game:HttpGet('https://raw.githubusercontent.com/Xenon-Trash/Loader/main/Loader.lua'))()
@@ -30,31 +40,21 @@ task.spawn(function()
             local gogetaReady = gogetaCost.Value >= 5000
             local aceReady = aceCost.Value >= 2000
 
-            if gogetaReady and aceReady then
-                upgradeUnit(ace, 1)
-
-                local deployOrder = {"Gogeta", "Saber:Evo", "Ace"}
-                for _, unitName in ipairs(deployOrder) do
-                    local unit = unitsFolder:FindFirstChild(unitName) or unitsFolder:FindFirstChild(unitName:gsub(":", ""))
-                    if unit then
-                        game.ReplicatedStorage.Remote.Server.Units.Deployment:FireServer(unit)
-                        print("✅ ปล่อยยูนิต: " .. unitName)
-                        task.wait(0.3)
-                    else
-                        warn("⚠️ ไม่พบยูนิตใน UnitsFolder: " .. unitName)
-                    end
-                end
-            else
-                if not gogetaReady then
-                    upgradeUnit(gogeta, 3)
-                    print("🔄 อัปเกรด Gogeta...")
-                end
-                if not aceReady then
-                    upgradeUnit(ace, 1)
-                    print("🔄 อัปเกรด Ace (ยังไม่ถึง 2000)...")
-                end
-                print("⏳ ยังไม่ถึงเงื่อนไขการปล่อยยูนิต กำลังอัปเกรด...")
+            if not gogetaReady then
+                print("🔄 อัปเกรด Gogeta...")
+                upgradeUnit(gogeta, 3)
+                deployUnit("Gogeta", unitsFolder)
             end
+
+            if not aceReady then
+                print("🔄 อัปเกรด Ace...")
+                upgradeUnit(ace, 1)
+                deployUnit("Ace", unitsFolder)
+            end
+
+            -- ปล่อย Saber ไม่ว่าเงื่อนไขจะเป็นอย่างไร
+            deployUnit("Saber:Evo", unitsFolder)
+
         end)
 
         task.wait(0.25)
