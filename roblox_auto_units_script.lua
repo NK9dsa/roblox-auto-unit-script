@@ -2,7 +2,7 @@ task.spawn(function()
     local function upgradeUnit(unit, times)
         for i = 1, times do
             game.ReplicatedStorage.Remote.Server.Units.Upgrade:FireServer(unit)
-            task.wait(0.001) -- เร็วขึ้น
+            task.wait(0.001)
         end
     end
 
@@ -23,16 +23,14 @@ task.spawn(function()
             if not (gogeta and saber and ace) then return end
 
             local gogetaCost = gogeta:FindFirstChild("Upgrade_Folder") and gogeta.Upgrade_Folder:FindFirstChild("Upgrade_Cost")
-            local saberCost = saber:FindFirstChild("Upgrade_Folder") and saber.Upgrade_Folder:FindFirstChild("Upgrade_Cost")
             local aceCost = ace:FindFirstChild("Upgrade_Folder") and ace.Upgrade_Folder:FindFirstChild("Upgrade_Cost")
 
-            if not (gogetaCost and saberCost and aceCost) then return end
+            if not (gogetaCost and aceCost) then return end
 
             local gogetaReady = gogetaCost.Value >= 5000
-            local saberReady = saberCost.Value >= 3500
             local aceReady = aceCost.Value >= 2000
 
-            if gogetaReady and saberReady and aceReady then
+            if gogetaReady and aceReady then
                 upgradeUnit(ace, 1)
 
                 local deployOrder = {"Gogeta", "Saber:Evo", "Ace"}
@@ -51,10 +49,6 @@ task.spawn(function()
                     upgradeUnit(gogeta, 3)
                     print("🔄 อัปเกรด Gogeta...")
                 end
-                if not saberReady then
-                    upgradeUnit(saber, 1)
-                    print("🔄 อัปเกรด Saber...")
-                end
                 if not aceReady then
                     upgradeUnit(ace, 1)
                     print("🔄 อัปเกรด Ace (ยังไม่ถึง 2000)...")
@@ -63,7 +57,7 @@ task.spawn(function()
             end
         end)
 
-        task.wait(0.25) -- ลูปหลักเร็วขึ้น
+        task.wait(0.25)
     end
 end)
 
