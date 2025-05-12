@@ -13,6 +13,14 @@ local placeId = game.PlaceId
 GuiService.ErrorMessageChanged:Connect(function(err)
     if err and err ~= "" then
         print("🚨 ตรวจพบ Error: " .. err)
+
+        -- ตรวจสอบข้อความที่อาจหมายถึง Error 267
+        if string.find(err, "kicked") or string.find(err, "Kick") then
+            print("❌ ผู้เล่นถูกเตะออกจากเกม (Error 267) ไม่พยายามรีจอย")
+            return
+        end
+
+        -- รอ 2 วินาทีแล้วพยายามรีจอย
         task.wait(2)
         print("🔄 กำลังพยายามรีจอยเซิร์เวอร์...")
         TeleportService:Teleport(placeId, player)
@@ -20,6 +28,7 @@ GuiService.ErrorMessageChanged:Connect(function(err)
         print("✅ ไม่มี Error, ทุกอย่างปกติ")
     end
 end)
+
 
 print("📌 ระบบป้องกันหลุดทำงานแล้ว")
 
