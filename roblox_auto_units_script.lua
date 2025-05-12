@@ -37,22 +37,23 @@ task.spawn(function()
 
             if not (gogetaCost and aceCost) then return end
 
-            -- ✅ ถ้า Gogeta ยังไม่ถึง 5000 ให้อัปเกรด 3 ครั้ง แล้วปล่อยเลย
+            -- ✅ ถ้า Gogeta ยังไม่ถึง 5000 ให้อัปเกรด 3 ครั้ง แล้วปล่อย
             if gogetaCost.Value < 5000 then
                 print("🔄 อัปเกรด Gogeta...")
                 upgradeUnit(gogeta, 3)
             end
             deployUnit("Gogeta", unitsFolder)
 
-            -- ✅ Ace อัปเกรดเรื่อย ๆ จนเกิน 2000 แล้วค่อยปล่อย
-            while ace.Upgrade_Folder.Upgrade_Cost.Value <= 2000 do
-                print("🔄 อัปเกรด Ace...")
-                upgradeUnit(ace, 1)
-                task.wait(0.05)
-            end
-            deployUnit("Ace", unitsFolder)
+            -- ✅ Ace อัปเกรดเรื่อย ๆ ไม่มีที่สิ้นสุด
+            print("🔁 อัปเกรด Ace ต่อเนื่อง...")
+            upgradeUnit(ace, 1)
 
-            -- ✅ ปล่อย Saber โดยไม่ต้องอัปเกรด
+            -- ✅ ปล่อย Ace ถ้าเงื่อนไขผ่าน
+            if ace.Upgrade_Folder.Upgrade_Cost.Value > 2000 then
+                deployUnit("Ace", unitsFolder)
+            end
+
+            -- ✅ ปล่อย Saber ทันที
             deployUnit("Saber:Evo", unitsFolder)
 
         end)
