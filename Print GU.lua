@@ -187,8 +187,8 @@ local function setupCompactStatusGUI()
         end
     end
 
-    checkAndBuyItem("Dr. Megga Punk", 8000, punkLabel)
-    checkAndBuyItem("Trait Reroll", 900, rerollLabel)
+    checkAndBuyItem("Dr. Megga Punk", 7500, punkLabel)
+    checkAndBuyItem("Trait Reroll", 1, rerollLabel)
 
     checkAndUpdateItems()
 
