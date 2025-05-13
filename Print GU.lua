@@ -32,6 +32,64 @@ end)
 
 print("📌 ระบบป้องกันหลุดทำงานแล้ว")
 
+
+-- ✅ ป้องกันซ้ำ
+if getgenv().scriptRunning then return end
+getgenv().scriptRunning = true
+
+-- ✅ Loop ยิง VotePlaying ทุก 5 วินาที (ปรับได้)
+task.spawn(function()
+    if getgenv().votePlayingLoopRunning then return end
+    getgenv().votePlayingLoopRunning = true
+
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    while true do
+        ReplicatedStorage.Remote.Server.OnGame.Voting.VotePlaying:FireServer()
+        print("📤 ยิง VotePlaying แล้ว")
+        task.wait(5)
+    end
+end)
+
+-- ✅ Loop ลบ GUI ถ้ามี
+task.spawn(function()
+    if getgenv().guiCleanerLoopRunning then return end
+    getgenv().guiCleanerLoopRunning = true
+
+    while true do
+        local player = game:GetService("Players").LocalPlayer
+        local playerGui = player:FindFirstChild("PlayerGui")
+        if playerGui and #playerGui:GetChildren() > 0 then
+            for _, gui in ipairs(playerGui:GetChildren()) do
+                gui:Destroy()
+            end
+            print("🧹 ลบ GUI ที่ตรวจพบในรอบนี้แล้ว")
+        end
+        task.wait(1)
+    end
+end)
+
+-- ✅ Loop VoteRetry
+task.spawn(function()
+    if getgenv().retryVoteLoopRunning then return end
+    getgenv().retryVoteLoopRunning = true
+
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+
+    while task.wait(1) do
+        if player and player.Parent then
+            ReplicatedStorage.Remote.Server.OnGame.Voting.VoteRetry:FireServer()
+            print("🔁 ยิง VoteRetry")
+        else
+            warn("❌ ผู้เล่นหายไปจากเกม หยุดการโหวต Retry")
+            break
+        end
+    end
+end)
+
+
 -- 🏋️ Anti-AFK
 local VirtualUser = game:service("VirtualUser")
 player.Idled:connect(function()
