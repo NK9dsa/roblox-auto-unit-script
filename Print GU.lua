@@ -32,7 +32,7 @@ end)
 
 print("📌 ระบบป้องกันหลุดทำงานแล้ว")
 
-
+wait(20)
 -- ✅ ป้องกันซ้ำ
 if getgenv().scriptRunning then return end
 getgenv().scriptRunning = true
