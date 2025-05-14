@@ -20,6 +20,10 @@ task.spawn(function()
     getgenv().key = {23165,60422,19160,81028,55939,42326}
     loadstring(game:HttpGet('https://raw.githubusercontent.com/Xenon-Trash/Loader/main/Loader.lua'))()
 
+    -- 🔁 ตัวแปรสำหรับลูปอัปเกรดหลัง Ace == 3500
+    local upgradeIndex = 1
+    local upgradeCycle = {"Ace", "Saber", "Gogeta"}
+
     while true do
         pcall(function()
             local player = game.Players.LocalPlayer
@@ -51,18 +55,29 @@ task.spawn(function()
             if aceCost.Value < 3500 then
                 print("🔁 อัปเกรด Ace ต่อเนื่อง... (" .. aceCost.Value .. ")")
                 upgradeUnit(ace, 1)
-            elseif aceCost.Value == 3500 then
-                print("🔁 Ace เต็มแล้ว ลำดับอัปเกรด Ace → Saber → Gogeta")
 
-                if aceCost.Value < 99999 then
-                    print("🔼 อัปเกรด Ace เพิ่มเติม (หลัง 3500)")
+            elseif aceCost.Value == 3500 then
+                print("🔁 Ace เต็มแล้ว ลำดับอัปเกรดวน Ace → Saber → Gogeta")
+
+                local unitToUpgrade = upgradeCycle[upgradeIndex]
+
+                if unitToUpgrade == "Ace" and aceCost.Value < 99999 then
+                    print("🔼 อัปเกรด Ace (วนรอบ)")
                     upgradeUnit(ace, 1)
-                elseif saberCost and saberCost.Value < 99999 then
-                    print("🔼 อัปเกรด Saber เพิ่มเติม")
+                elseif unitToUpgrade == "Saber" and saberCost and saberCost.Value < 99999 then
+                    print("🔼 อัปเกรด Saber (วนรอบ)")
                     upgradeUnit(saber, 1)
-                elseif gogetaCost.Value < 99999 then
-                    print("🔼 อัปเกรด Gogeta เพิ่มเติม")
+                elseif unitToUpgrade == "Gogeta" and gogetaCost.Value < 99999 then
+                    print("🔼 อัปเกรด Gogeta (วนรอบ)")
                     upgradeUnit(gogeta, 1)
+                else
+                    print("⚠️ ยูนิตที่ควรอัปเกรดยังเต็มอยู่ ข้ามรอบนี้")
+                end
+
+                -- วนไปยูนิตถัดไป
+                upgradeIndex = upgradeIndex + 1
+                if upgradeIndex > #upgradeCycle then
+                    upgradeIndex = 1
                 end
             end
 
