@@ -38,31 +38,31 @@ task.spawn(function()
 
             if not (gogetaCost and aceCost) then return end
 
-            -- ✅ ถ้า Gogeta ยังไม่ถึง 5000 ให้อัปเกรด 3 ครั้ง
+            -- ✅ เงื่อนไข Gogeta
             if gogetaCost.Value < 5000 then
                 print("🔄 อัปเกรด Gogeta...")
                 upgradeUnit(gogeta, 3)
+            elseif gogetaCost.Value >= 5000 then
+                print("🚀 ปล่อย Gogeta (Upgrade_Cost >= 5000)")
+                deployUnit("Gogeta", unitsFolder)
             end
-            deployUnit("Gogeta", unitsFolder)
 
-            -- ✅ ถ้า Ace ยังไม่ถึง 3500 ให้อัปเกรด
+            -- ✅ เงื่อนไข Ace
             if aceCost.Value < 3500 then
                 print("🔁 อัปเกรด Ace ต่อเนื่อง... (" .. aceCost.Value .. ")")
                 upgradeUnit(ace, 1)
-
-            -- ✅ ถ้า Ace เท่ากับ 3500 ให้อัปเกรดยูนิตอื่นแทน
             elseif aceCost.Value == 3500 then
-                print("🔁 Ace เต็มแล้ว ลองอัปเกรด Gogeta → Saber → Ace")
+                print("🔁 Ace เต็มแล้ว ลำดับอัปเกรด Ace → Saber → Gogeta")
 
-                if gogetaCost.Value < 99999 then
-                    print("🔼 อัปเกรด Gogeta เพิ่มเติม")
-                    upgradeUnit(gogeta, 1)
+                if aceCost.Value < 99999 then
+                    print("🔼 อัปเกรด Ace เพิ่มเติม (หลัง 3500)")
+                    upgradeUnit(ace, 1)
                 elseif saberCost and saberCost.Value < 99999 then
                     print("🔼 อัปเกรด Saber เพิ่มเติม")
                     upgradeUnit(saber, 1)
-                elseif aceCost.Value < 99999 then
-                    print("🔼 อัปเกรด Ace ต่อ (หลัง 3500)")
-                    upgradeUnit(ace, 1)
+                elseif gogetaCost.Value < 99999 then
+                    print("🔼 อัปเกรด Gogeta เพิ่มเติม")
+                    upgradeUnit(gogeta, 1)
                 end
             end
 
@@ -71,7 +71,7 @@ task.spawn(function()
                 deployUnit("Ace", unitsFolder)
             end
 
-            -- ✅ ปล่อย Saber โดยไม่ต้องอัปเกรด
+            -- ✅ ปล่อย Saber ตลอดเวลา
             deployUnit("Saber:Evo", unitsFolder)
 
         end)
