@@ -15,7 +15,7 @@ local function createItemEmbed(playerName, itemValue, eggValue)
         title = "Check Item ⌛ Easter Anime Rangers X",
         color = 13369344,
         fields = {
-            {name = "**⭐ : ชื่อในเกม**", value = "**" .. playerName .. "**"},
+            {name = "**⭐ : ชื่อในเกม**", value = "||" .. playerName .. "||"},
             {name = "**👉🏻 : Cursed Finger**", value = "**" .. tostring(itemValue.CursedFinger or 0) .. "** ชิ้น"},
             {name = "**🧑🏻‍⚕️ : Dr. Megga Punk**", value = "**" .. tostring(itemValue.DrMeggaPunk or 0) .. "** ชิ้น"},
             {name = "**🔮 : Ranger Crystal**", value = "**" .. tostring(itemValue.RangerCrystal or 0) .. "** ชิ้น"},
