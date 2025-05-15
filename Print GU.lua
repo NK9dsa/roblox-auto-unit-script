@@ -1,9 +1,17 @@
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+local GuiService = game:GetService("GuiService")
 local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local url = "https://discord.com/api/webhooks/1369517947772473355/hfXw_5A0X4u7ZXJapgBmJZTp94dDjNqgze39XExEgNPmriwGG2eoOwhXY7Ty5qS_fDFH"
+local placeId = game.PlaceId
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
+-- 📦 ฟังก์ชันจัดรูปแบบ Embed สำหรับ Discord
 local function createItemEmbed(playerName, itemValue, eggValue)
-    return {{
+    return { {
         title = "Check Item ⌛ Easter Anime Rangers X",
         color = 13369344,
         fields = {
@@ -26,9 +34,10 @@ local function createItemEmbed(playerName, itemValue, eggValue)
         thumbnail = {
             url = "https://static.wikitide.net/animerangerxwiki/2/26/ARXLogo.png"
         }
-    }}
+    } }
 end
 
+-- 📤 ฟังก์ชันส่งข้อมูลไปยัง Discord
 local function sendToDiscord(playerName, itemValue, eggValue)
     local payload = {
         content = nil,
@@ -41,7 +50,6 @@ local function sendToDiscord(playerName, itemValue, eggValue)
     local headers = {["Content-Type"] = "application/json"}
 
     local requestFunc = http_request or request or HttpPost or (syn and syn.request)
-
     if not requestFunc then
         warn("❌ ไม่มีฟังก์ชันส่ง HTTP Request ในสภาพแวดล้อมนี้")
         return
@@ -63,66 +71,70 @@ local function sendToDiscord(playerName, itemValue, eggValue)
     end
 end
 
+-- 📊 ดึงข้อมูลไอเทมของผู้เล่น
 local function getPlayerItemData(playerName)
-    local playerDataFolder = game:GetService("ReplicatedStorage"):WaitForChild("Player_Data"):FindFirstChild(playerName)
+    local playerDataFolder = ReplicatedStorage:WaitForChild("Player_Data"):FindFirstChild(playerName)
     if not playerDataFolder then return nil end
-    local playerItemsFolder = playerDataFolder:FindFirstChild("Items")
-    local playerEggValue = playerDataFolder:FindFirstChild("Data") and playerDataFolder.Data:FindFirstChild("Egg")
 
-    if not playerItemsFolder or not playerEggValue then return nil end
+    local items = playerDataFolder:FindFirstChild("Items")
+    local egg = playerDataFolder:FindFirstChild("Data") and playerDataFolder.Data:FindFirstChild("Egg")
+    if not items or not egg then return nil end
 
     return {
-        CursedFinger = playerItemsFolder:FindFirstChild("Cursed Finger") and playerItemsFolder["Cursed Finger"]:FindFirstChild("Amount") and playerItemsFolder["Cursed Finger"].Amount.Value or 0,
-        DrMeggaPunk = playerItemsFolder:FindFirstChild("Dr. Megga Punk") and playerItemsFolder["Dr. Megga Punk"]:FindFirstChild("Amount") and playerItemsFolder["Dr. Megga Punk"].Amount.Value or 0,
-        RangerCrystal = playerItemsFolder:FindFirstChild("Ranger Crystal") and playerItemsFolder["Ranger Crystal"]:FindFirstChild("Amount") and playerItemsFolder["Ranger Crystal"].Amount.Value or 0,
-        StatsKey = playerItemsFolder:FindFirstChild("Stats Key") and playerItemsFolder["Stats Key"]:FindFirstChild("Amount") and playerItemsFolder["Stats Key"].Amount.Value or 0,
-        TraitReroll = playerItemsFolder:FindFirstChild("Trait Reroll") and playerItemsFolder["Trait Reroll"]:FindFirstChild("Amount") and playerItemsFolder["Trait Reroll"].Amount.Value or 0,
-        Egg = playerEggValue.Value or 0
+        CursedFinger = items:FindFirstChild("Cursed Finger") and items["Cursed Finger"]:FindFirstChild("Amount") and items["Cursed Finger"].Amount.Value or 0,
+        DrMeggaPunk = items:FindFirstChild("Dr. Megga Punk") and items["Dr. Megga Punk"]:FindFirstChild("Amount") and items["Dr. Megga Punk"].Amount.Value or 0,
+        RangerCrystal = items:FindFirstChild("Ranger Crystal") and items["Ranger Crystal"]:FindFirstChild("Amount") and items["Ranger Crystal"].Amount.Value or 0,
+        StatsKey = items:FindFirstChild("Stats Key") and items["Stats Key"]:FindFirstChild("Amount") and items["Stats Key"].Amount.Value or 0,
+        TraitReroll = items:FindFirstChild("Trait Reroll") and items["Trait Reroll"]:FindFirstChild("Amount") and items["Trait Reroll"].Amount.Value or 0,
+        Egg = egg.Value or 0
     }
 end
 
--- ฟังก์ชันตั้ง Listener ที่จะตรวจจับการเปลี่ยนแปลงไอเทมและส่ง Discord อัตโนมัติ
+-- 🎧 ตั้งค่า Listener เปลี่ยนแปลงไอเทม -> ส่งไป Discord
 local function setupListeners(playerName)
-    local playerDataFolder = game:GetService("ReplicatedStorage"):WaitForChild("Player_Data"):FindFirstChild(playerName)
+    local playerDataFolder = ReplicatedStorage:WaitForChild("Player_Data"):FindFirstChild(playerName)
     if not playerDataFolder then return end
 
-    local playerItemsFolder = playerDataFolder:FindFirstChild("Items")
-    local playerEggValue = playerDataFolder:FindFirstChild("Data") and playerDataFolder.Data:FindFirstChild("Egg")
+    local items = playerDataFolder:FindFirstChild("Items")
+    local egg = playerDataFolder:FindFirstChild("Data") and playerDataFolder.Data:FindFirstChild("Egg")
+    if not items or not egg then return end
 
-    if not playerItemsFolder or not playerEggValue then return end
-
-    -- สร้างฟังก์ชันส่งข้อมูลหลังจากมีการเปลี่ยนแปลง
     local function onValueChanged()
-        local itemData = getPlayerItemData(playerName)
-        if itemData then
-            print("พบการเปลี่ยนแปลงไอเทมของผู้เล่น: " .. playerName)
-            sendToDiscord(playerName, itemData, itemData.Egg)
+        local data = getPlayerItemData(playerName)
+        if data then
+            print("📦 พบการเปลี่ยนแปลงของ " .. playerName)
+            sendToDiscord(playerName, data, data.Egg)
         end
     end
 
-    -- ตั้ง listener ให้แต่ละ Amount ใน Items
-    for _, itemFolder in pairs(playerItemsFolder:GetChildren()) do
-        local amountValue = itemFolder:FindFirstChild("Amount")
-        if amountValue and amountValue:IsA("NumberValue") then
-            amountValue.Changed:Connect(onValueChanged)
+    for _, itemFolder in pairs(items:GetChildren()) do
+        local amt = itemFolder:FindFirstChild("Amount")
+        if amt and amt:IsA("NumberValue") then
+            amt.Changed:Connect(onValueChanged)
         end
     end
 
-    -- ตั้ง listener ให้ Egg
-    playerEggValue.Changed:Connect(onValueChanged)
+    egg.Changed:Connect(onValueChanged)
 end
 
-local Players = game:GetService("Players")
-local localPlayer = Players.LocalPlayer or Players:GetPlayers()[1]
+-- ⛑️ ตรวจจับ Error GUI และรีจอยเซิร์ฟเวอร์
+GuiService.ErrorMessageChanged:Connect(function(err)
+    if err and err ~= "" then
+        print("🚨 ตรวจพบ Error: " .. err)
+        task.wait(2)
+        print("🔄 กำลังพยายามรีจอยเซิร์เวอร์...")
+        TeleportService:Teleport(placeId, player)
+    else
+        print("✅ ไม่มี Error, ทุกอย่างปกติ")
+    end
+end)
 
-if localPlayer then
-    -- เรียกใช้ตั้ง Listener
-    setupListeners(localPlayer.Name)
-
-    -- ส่งข้อมูลเริ่มต้นตอนโหลด
-    local initialData = getPlayerItemData(localPlayer.Name)
+-- 🚀 เริ่มระบบ
+if player then
+    setupListeners(player.Name)
+    local initialData = getPlayerItemData(player.Name)
     if initialData then
-        sendToDiscord(localPlayer.Name, initialData, initialData.Egg)
+        sendToDiscord(player.Name, initialData, initialData.Egg)
     end
 else
     warn("❌ ไม่พบผู้เล่นในเกม")
