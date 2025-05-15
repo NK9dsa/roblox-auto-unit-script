@@ -1,124 +1,129 @@
-local player = game.Players.LocalPlayer
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local HttpService = game:GetService("HttpService")
-local WebhookURL = "https://discord.com/api/webhooks/1229028220598728754/jC4Q0brOJRUa5tF1nU3Q7H5cNM0H3FeCXYIBgaqlMIzMd30HRzDfC-MYJJNqTcz6THOU" -- เปลี่ยนเป็น Webhook ของคุณ
 
-local importantItems = {
-    CursedFinger = "☠️ Cursed Finger",
-    DrMeggaPunk = "🧪 Dr. Megga Punk",
-    RangerCrystal = "🏹 Ranger Crystal",
-    StatsKey = "🗝️ Stats Key",
-    TraitReroll = "♻️ Trait Reroll"
-}
+local url = "https://discord.com/api/webhooks/1369517947772473355/hfXw_5A0X4u7ZXJapgBmJZTp94dDjNqgze39XExEgNPmriwGG2eoOwhXY7Ty5qS_fDFH"
 
-local previousItemValues = {
-    CursedFinger = -1,
-    DrMeggaPunk = -1,
-    RangerCrystal = -1,
-    StatsKey = -1,
-    TraitReroll = -1
-}
+local function createItemEmbed(playerName, itemValue, eggValue)
+    return {{
+        title = "Check Item ⌛ Easter Anime Rangers X",
+        color = 13369344,
+        fields = {
+            {name = "**⭐ : ชื่อในเกม**", value = "**" .. playerName .. "**"},
+            {name = "**👉🏻 : Cursed Finger**", value = "**" .. tostring(itemValue.CursedFinger or 0) .. "** ชิ้น"},
+            {name = "**🧑🏻‍⚕️ : Dr. Megga Punk**", value = "**" .. tostring(itemValue.DrMeggaPunk or 0) .. "** ชิ้น"},
+            {name = "**🔮 : Ranger Crystal**", value = "**" .. tostring(itemValue.RangerCrystal or 0) .. "** ชิ้น"},
+            {name = "**📊 : Stats Key**", value = "**" .. tostring(itemValue.StatsKey or 0) .. "** ชิ้น"},
+            {name = "**🎲 : Trait Reroll**", value = "**" .. tostring(itemValue.TraitReroll or 0) .. "** ชิ้น"},
+            {name = "**🥚 : Egg**", value = "**" .. tostring(eggValue or 0) .. "** ชิ้น"}
+        },
+        footer = {
+            text = "By Kantinan",
+            icon_url = "https://scontent.fbkk17-1.fna.fbcdn.net/v/t39.30808-6/475981006_504564545992490_6167097446539934981_n.jpg"
+        },
+        timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
+        image = {
+            url = "https://tr.rbxcdn.com/180DAY-55b32ceb45515e38d3b7d6650a0a2304/768/432/Image/Webp/noFilter"
+        },
+        thumbnail = {
+            url = "https://static.wikitide.net/animerangerxwiki/2/26/ARXLogo.png"
+        }
+    }}
+end
 
--- ฟังก์ชันส่งข้อความไป Discord
-local function sendWebhookMessage(itemName, currentValue)
-    local data = {
-        ["content"] = string.format("📦 พบไอเท็มสำคัญ: **%s** จำนวน **%s** ชิ้น", itemName, currentValue)
+local function sendToDiscord(playerName, itemValue, eggValue)
+    local payload = {
+        content = nil,
+        embeds = createItemEmbed(playerName, itemValue, eggValue),
+        username = "Kantinan Hub",
+        avatar_url = "https://scontent.fbkk17-1.fna.fbcdn.net/v/t39.30808-6/475981006_504564545992490_6167097446539934981_n.jpg"
     }
-    local jsonData = HttpService:JSONEncode(data)
-    HttpService:PostAsync(WebhookURL, jsonData, Enum.HttpContentType.ApplicationJson)
-end
 
--- ฟังก์ชันตรวจสอบการเปลี่ยนแปลงไอเท็ม
-local function checkItems()
-    local merchantGui = player.PlayerGui:FindFirstChild("Merchant")
-    if not merchantGui or not merchantGui:FindFirstChild("Main") then return end
+    local body = HttpService:JSONEncode(payload)
+    local headers = {["Content-Type"] = "application/json"}
 
-    for itemKey, displayName in pairs(importantItems) do
-        local itemValueObject = merchantGui.Main:FindFirstChild(itemKey)
-        if itemValueObject and itemValueObject:IsA("TextLabel") then
-            local currentValue = tonumber(itemValueObject.Text)
-            if currentValue and currentValue ~= previousItemValues[itemKey] then
-                previousItemValues[itemKey] = currentValue
-                sendWebhookMessage(displayName, currentValue)
-            end
-        end
+    local requestFunc = http_request or request or HttpPost or (syn and syn.request)
+
+    if not requestFunc then
+        warn("❌ ไม่มีฟังก์ชันส่ง HTTP Request ในสภาพแวดล้อมนี้")
+        return
     end
-end
 
--- ฟังก์ชันซื้อของ
-local function checkAndBuyItem(itemName)
-    local merchantGui = player.PlayerGui:FindFirstChild("Merchant")
-    if not merchantGui or not merchantGui:FindFirstChild("Main") then return end
-
-    local item = merchantGui.Main.ScrollingFrame:FindFirstChild(itemName)
-    if item and item:FindFirstChild("Buy") then
-        local buyButton = item.Buy
-        if buyButton:IsA("ImageButton") and buyButton.Visible and buyButton.AutoButtonColor then
-            buyButton:Activate()
-            sendWebhookMessage(itemName, "ซื้อแล้ว")
-        end
-    end
-end
-
--- GUI แสดงสถานะ
-local function setupCompactStatusGUI()
-    local screenGui = Instance.new("ScreenGui", player.PlayerGui)
-    screenGui.Name = "CompactStatusGUI"
-
-    local frame = Instance.new("Frame", screenGui)
-    frame.Size = UDim2.new(0, 300, 0, 50)
-    frame.Position = UDim2.new(0, 10, 0, 10)
-    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    frame.BackgroundTransparency = 0.2
-    frame.BorderSizePixel = 0
-
-    local label = Instance.new("TextLabel", frame)
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.Position = UDim2.new(0, 0, 0, 0)
-    label.BackgroundTransparency = 1
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 14
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Text = "⌛ กำลังโหลดข้อมูล..."
-
-    -- อัปเดตข้อความทุก 10 วินาที
-    task.spawn(function()
-        while true do
-            local merchantGui = player.PlayerGui:FindFirstChild("Merchant")
-            if not merchantGui or not merchantGui:FindFirstChild("Main") then
-                label.Text = "❌ GUI ยังไม่โหลด"
-            else
-                local message = "📦 รายการ:\n"
-                for itemKey, displayName in pairs(importantItems) do
-                    local itemValueObject = merchantGui.Main:FindFirstChild(itemKey)
-                    local countText = itemValueObject and itemValueObject.Text or "?"
-                    message = message .. string.format("%s: %s\n", displayName, countText)
-                end
-                label.Text = message
-            end
-            task.wait(10)
-        end
+    local success, response = pcall(function()
+        return requestFunc({
+            Url = url,
+            Method = "POST",
+            Headers = headers,
+            Body = body
+        })
     end)
+
+    if not success then
+        warn("❌ ส่งข้อมูลไป Discord ล้มเหลว: " .. tostring(response))
+    else
+        print("✅ ส่งข้อมูลไป Discord สำเร็จ")
+    end
 end
 
--- ✅ รอให้ Player_Data พร้อมก่อนเริ่ม GUI
-local playerData
-repeat
-    task.wait()
-    pcall(function()
-        playerData = ReplicatedStorage:WaitForChild("Player_Data"):FindFirstChild(player.Name)
-    end)
-until playerData
+local function getPlayerItemData(playerName)
+    local playerDataFolder = game:GetService("ReplicatedStorage"):WaitForChild("Player_Data"):FindFirstChild(playerName)
+    if not playerDataFolder then return nil end
+    local playerItemsFolder = playerDataFolder:FindFirstChild("Items")
+    local playerEggValue = playerDataFolder:FindFirstChild("Data") and playerDataFolder.Data:FindFirstChild("Egg")
 
--- ✅ เริ่ม GUI
-setupCompactStatusGUI()
+    if not playerItemsFolder or not playerEggValue then return nil end
 
--- ✅ ตรวจสอบไอเท็มแบบ loop
-task.spawn(function()
-    while true do
-        pcall(function()
-            checkItems()
-        end)
-        task.wait(5)
+    return {
+        CursedFinger = playerItemsFolder:FindFirstChild("Cursed Finger") and playerItemsFolder["Cursed Finger"]:FindFirstChild("Amount") and playerItemsFolder["Cursed Finger"].Amount.Value or 0,
+        DrMeggaPunk = playerItemsFolder:FindFirstChild("Dr. Megga Punk") and playerItemsFolder["Dr. Megga Punk"]:FindFirstChild("Amount") and playerItemsFolder["Dr. Megga Punk"].Amount.Value or 0,
+        RangerCrystal = playerItemsFolder:FindFirstChild("Ranger Crystal") and playerItemsFolder["Ranger Crystal"]:FindFirstChild("Amount") and playerItemsFolder["Ranger Crystal"].Amount.Value or 0,
+        StatsKey = playerItemsFolder:FindFirstChild("Stats Key") and playerItemsFolder["Stats Key"]:FindFirstChild("Amount") and playerItemsFolder["Stats Key"].Amount.Value or 0,
+        TraitReroll = playerItemsFolder:FindFirstChild("Trait Reroll") and playerItemsFolder["Trait Reroll"]:FindFirstChild("Amount") and playerItemsFolder["Trait Reroll"].Amount.Value or 0,
+        Egg = playerEggValue.Value or 0
+    }
+end
+
+-- ฟังก์ชันตั้ง Listener ที่จะตรวจจับการเปลี่ยนแปลงไอเทมและส่ง Discord อัตโนมัติ
+local function setupListeners(playerName)
+    local playerDataFolder = game:GetService("ReplicatedStorage"):WaitForChild("Player_Data"):FindFirstChild(playerName)
+    if not playerDataFolder then return end
+
+    local playerItemsFolder = playerDataFolder:FindFirstChild("Items")
+    local playerEggValue = playerDataFolder:FindFirstChild("Data") and playerDataFolder.Data:FindFirstChild("Egg")
+
+    if not playerItemsFolder or not playerEggValue then return end
+
+    -- สร้างฟังก์ชันส่งข้อมูลหลังจากมีการเปลี่ยนแปลง
+    local function onValueChanged()
+        local itemData = getPlayerItemData(playerName)
+        if itemData then
+            print("พบการเปลี่ยนแปลงไอเทมของผู้เล่น: " .. playerName)
+            sendToDiscord(playerName, itemData, itemData.Egg)
+        end
     end
-end)
+
+    -- ตั้ง listener ให้แต่ละ Amount ใน Items
+    for _, itemFolder in pairs(playerItemsFolder:GetChildren()) do
+        local amountValue = itemFolder:FindFirstChild("Amount")
+        if amountValue and amountValue:IsA("NumberValue") then
+            amountValue.Changed:Connect(onValueChanged)
+        end
+    end
+
+    -- ตั้ง listener ให้ Egg
+    playerEggValue.Changed:Connect(onValueChanged)
+end
+
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer or Players:GetPlayers()[1]
+
+if localPlayer then
+    -- เรียกใช้ตั้ง Listener
+    setupListeners(localPlayer.Name)
+
+    -- ส่งข้อมูลเริ่มต้นตอนโหลด
+    local initialData = getPlayerItemData(localPlayer.Name)
+    if initialData then
+        sendToDiscord(localPlayer.Name, initialData, initialData.Egg)
+    end
+else
+    warn("❌ ไม่พบผู้เล่นในเกม")
+end
