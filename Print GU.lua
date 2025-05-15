@@ -1,30 +1,27 @@
-local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local Players = game:GetService("Players")
 local GuiService = game:GetService("GuiService")
+local HttpService = game:GetService("HttpService")
+
+local player = Players.LocalPlayer
+local placeId = game.PlaceId
 
 -- URL ของ Webhook
 local url = "https://discord.com/api/webhooks/1369517947772473355/hfXw_5A0X4u7ZXJapgBmJZTp94dDjNqgze39XExEgNPmriwGG2eoOwhXY7Ty5qS_fDFH"
 
-local player = Players.LocalPlayer or Players:GetPlayers()[1]
-local placeId = game.PlaceId
-
--- ตัวแปรเก็บ Error ล่าสุด
-local lastError = ""
-
--- ฟังก์ชันสร้าง Embed สำหรับ Discord
+-- ฟังก์ชันสร้าง Embed
 local function createItemEmbed(playerName, itemValue, eggValue)
-    return { {
+    return {{
         title = "Check Item ⌛ Easter Anime Rangers X",
         color = 13369344,
         fields = {
-            { name = "**⭐ : ชื่อในเกม**", value = "**" .. playerName .. "**" },
-            { name = "**👉🏻 : Cursed Finger**", value = "**" .. tostring(itemValue.CursedFinger or 0) .. "** ชิ้น" },
-            { name = "**🧑🏻‍⚕️ : Dr. Megga Punk**", value = "**" .. tostring(itemValue.DrMeggaPunk or 0) .. "** ชิ้น" },
-            { name = "**🔮 : Ranger Crystal**", value = "**" .. tostring(itemValue.RangerCrystal or 0) .. "** ชิ้น" },
-            { name = "**📊 : Stats Key**", value = "**" .. tostring(itemValue.StatsKey or 0) .. "** ชิ้น" },
-            { name = "**🎲 : Trait Reroll**", value = "**" .. tostring(itemValue.TraitReroll or 0) .. "** ชิ้น" },
-            { name = "**🥚 : Egg**", value = "**" .. tostring(eggValue or 0) .. "** ชิ้น" }
+            {name = "**⭐ : ชื่อในเกม**", value = "**" .. playerName .. "**"},
+            {name = "**👉🏻 : Cursed Finger**", value = "**" .. tostring(itemValue.CursedFinger or 0) .. "** ชิ้น"},
+            {name = "**🧑🏻‍⚕️ : Dr. Megga Punk**", value = "**" .. tostring(itemValue.DrMeggaPunk or 0) .. "** ชิ้น"},
+            {name = "**🔮 : Ranger Crystal**", value = "**" .. tostring(itemValue.RangerCrystal or 0) .. "** ชิ้น"},
+            {name = "**📊 : Stats Key**", value = "**" .. tostring(itemValue.StatsKey or 0) .. "** ชิ้น"},
+            {name = "**🎲 : Trait Reroll**", value = "**" .. tostring(itemValue.TraitReroll or 0) .. "** ชิ้น"},
+            {name = "**🥚 : Egg**", value = "**" .. tostring(eggValue or 0) .. "** ชิ้น"}
         },
         footer = {
             text = "By Kantinan",
@@ -37,7 +34,7 @@ local function createItemEmbed(playerName, itemValue, eggValue)
         thumbnail = {
             url = "https://static.wikitide.net/animerangerxwiki/2/26/ARXLogo.png"
         }
-    } }
+    }}
 end
 
 -- ฟังก์ชันส่งข้อมูลไป Discord
@@ -50,9 +47,8 @@ local function sendToDiscord(playerName, itemValue, eggValue)
     }
 
     local body = HttpService:JSONEncode(payload)
-    local headers = { ["Content-Type"] = "application/json" }
+    local headers = {["Content-Type"] = "application/json"}
 
-    -- เลือกฟังก์ชันส่ง HTTP Request ที่ใช้ได้
     local requestFunc = http_request or request or HttpPost or (syn and syn.request)
 
     if not requestFunc then
@@ -76,7 +72,7 @@ local function sendToDiscord(playerName, itemValue, eggValue)
     end
 end
 
--- ฟังก์ชันเช็คข้อมูลไอเทมจาก ReplicatedStorage ของผู้เล่น
+-- ฟังก์ชันเช็คข้อมูลไอเทมจาก ReplicatedStorage ของผู้เล่นที่ส่งมา
 local function checkItemsForPlayer(playerName)
     local playerDataFolder = game:GetService("ReplicatedStorage"):WaitForChild("Player_Data"):FindFirstChild(playerName)
     if not playerDataFolder then
@@ -111,30 +107,24 @@ local function checkItemsForPlayer(playerName)
     sendToDiscord(playerName, itemInfo, eggValue)
 end
 
--- เชื่อม Event เพื่อเก็บ Error ล่าสุด
-GuiService.ErrorMessageChanged:Connect(function(err)
-    lastError = err or ""
-end)
-
--- เริ่มลูปเช็ค Error ทุก 60 วินาที
-task.spawn(function()
+-- ลูปส่งข้อมูลทุก 60 วินาที (1 นาที)
+spawn(function()
     while true do
-        task.wait(60)
-        if lastError ~= "" then
-            print("🚨 ตรวจพบ Error รอบเช็ค: " .. lastError)
-            lastError = "" -- เคลียร์ Error หลังจากส่ง Teleport
-            print("🔄 กำลังพยายามรีจอยเซิร์ฟเวอร์...")
-            TeleportService:Teleport(placeId, player)
-            break -- ออกจากลูปถ้ารีจอยแล้ว
-        else
-            print("✅ ไม่มี Error รอบเช็ค")
+        if player then
+            checkItemsForPlayer(player.Name)
         end
+        wait(60)
     end
 end)
 
--- เรียกฟังก์ชันเช็คไอเทมสำหรับผู้เล่นที่กำลังเล่น
-if player then
-    checkItemsForPlayer(player.Name)
-else
-    warn("❌ ไม่พบผู้เล่นในเกม")
-end
+-- โค้ดป้องกันหลุดและรีจอยถ้ามี Error
+GuiService.ErrorMessageChanged:Connect(function(err)
+    if err and err ~= "" then
+        print("🚨 ตรวจพบ Error: " .. err)
+        task.wait(2)
+        print("🔄 กำลังพยายามรีจอยเซิร์ฟเวอร์...")
+        TeleportService:Teleport(placeId, player)
+    else
+        print("✅ ไม่มี Error, ทุกอย่างปกติ")
+    end
+end)
