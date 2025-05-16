@@ -41,7 +41,7 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, eggV
     )
 
     return {{
-        title = "Check Item ⌛ Easter Anime Rangers X",
+        title = "🧛🏻Anime Rangers X [UPDATE 1]",
         description = description,
         color = 13369344,
         footer = {
