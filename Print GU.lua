@@ -24,7 +24,7 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, eggV
         "💰 **Cursed Finger:** %d Gem (x%d)\n" ..
         "💰 **Ranger Crystal:** %d Gem (x%d)\n" ..
         "💰 **Stats Key:** %d Gem (x%d)\n" ..
-        "💰 **Perfect Stats Key:** %d Gem (x%d)\n",
+        "💰 **Trait Reroll:** %d Gem (x%d)\n",
         playerName or "Unknown",
         gemValue or 0, goldValue or 0,
         levelValue or 0, eggValue or 0,
@@ -37,7 +37,7 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, eggV
         merchantValue.CursedFinger.Amount or 0, merchantValue.CursedFinger.Quantity or 0,
         merchantValue.RangerCrystal.Amount or 0, merchantValue.RangerCrystal.Quantity or 0,
         merchantValue.StatsKey.Amount or 0, merchantValue.StatsKey.Quantity or 0,
-        merchantValue.PerfectStatsKey.Amount or 0, merchantValue.PerfectStatsKey.Quantity or 0
+        merchantValue.TraitReroll.Amount or 0, merchantValue.TraitReroll.Quantity or 0
     )
 
     return {{
@@ -94,7 +94,7 @@ local function getMerchantData(playerDataFolder)
         CursedFinger = {Amount = 0, Quantity = 0},
         RangerCrystal = {Amount = 0, Quantity = 0},
         StatsKey = {Amount = 0, Quantity = 0},
-        PerfectStatsKey = {Amount = 0, Quantity = 0}
+        TraitReroll = {Amount = 0, Quantity = 0}
     } end
 
     local function getMerchantInfo(itemName)
@@ -109,7 +109,7 @@ local function getMerchantData(playerDataFolder)
         CursedFinger = getMerchantInfo("Cursed Finger"),
         RangerCrystal = getMerchantInfo("Ranger Crystal"),
         StatsKey = getMerchantInfo("Stats Key"),
-        PerfectStatsKey = getMerchantInfo("Perfect Stats Key")
+        TraitReroll = getMerchantInfo("Trait Reroll")
     }
 end
 
