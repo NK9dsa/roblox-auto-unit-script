@@ -49,8 +49,8 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, eggV
             icon_url = "https://img2.pic.in.th/pic/475981006_504564545992490_6167097446539934981_n.md.jpg"
         },
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
-        thumbnail = {url = "https://static.wikitide.net/animerangerxwiki/2/26/ARXLogo.png"},
-        image = {url = "https://tr.rbxcdn.com/180DAY-55b32ceb45515e38d3b7d6650a0a2304/768/432/Image/Webp/noFilter"}
+        thumbnail = {url = "https://tr.rbxcdn.com/180DAY-6c8473da92bb389227037da660f4140f/150/150/Image/Webp/noFilter"},
+        image = {url = "https://tr.rbxcdn.com/180DAY-0b31ac08cbd92f3d49bb8814f0834315/768/432/Image/Png/noFilter"}
     }}
 end
 
