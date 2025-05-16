@@ -154,11 +154,11 @@ local function checkItemsForPlayer(playerName)
     sendToDiscord(playerName, itemInfo, eggValue, merchantInfo)
 end
 
--- 🔄 เรียกเช็คข้อมูลซ้ำทุก 30 วินาที
+-- 🔄 เรียกเช็คข้อมูลซ้ำทุก 60 วินาที
 task.spawn(function()
     while true do
         checkItemsForPlayer(player.Name)
-        task.wait(30)
+        task.wait(60)
     end
 end)
 
