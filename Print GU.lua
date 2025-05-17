@@ -40,7 +40,7 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, eggV
         merchantValue.TraitReroll.Amount or 0, merchantValue.TraitReroll.Quantity or 0
     )
 
-    return {{
+    return { {
         title = "🧛🏻Anime Rangers X [UPDATE 1]",
         description = description,
         color = 13369344,
@@ -49,10 +49,15 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, eggV
             icon_url = "https://img2.pic.in.th/pic/475981006_504564545992490_6167097446539934981_n.md.jpg"
         },
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
-        thumbnail = {url = "https://tr.rbxcdn.com/180DAY-6c8473da92bb389227037da660f4140f/150/150/Image/Webp/noFilter"},
-        image = {url = "https://tr.rbxcdn.com/180DAY-0b31ac08cbd92f3d49bb8814f0834315/768/432/Image/Png/noFilter"}
-    }}
+        thumbnail = {
+            url = "https://media.discordapp.net/attachments/1332161685196374096/1365402193393356800/image.png"
+        },
+        image = {
+            url = "https://tr.rbxcdn.com/180DAY-0b31ac08cbd92f3d49bb8814f0834315/768/432/Image/Png/noFilter"
+        }
+    } }
 end
+
 
 local function sendToDiscord(playerName, gemValue, goldValue, levelValue, eggValue, itemValue, merchantValue)
     local payload = {
