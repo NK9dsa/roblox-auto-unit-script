@@ -8,7 +8,7 @@ local placeId = game.PlaceId
 
 local url = "https://discord.com/api/webhooks/1372782698233335918/DuiWpxujmHXtVU1zd2pZnTbF9u0KsquHXFOKpjDvTOpUpgze9ex3FuTqWCjqO5X5xwXR"
 
-local function createItemEmbed(playerName, gemValue, goldValue, levelValue, rccellValue, itemValue, merchantValue)
+local function createItemEmbed(playerName, gemValue, goldValue, levelValue, rccellValue, itemValue, merchantValue, portal1, portal2, portal3)
     local description = string.format(
         "**⭐ ชื่อในเกม:** ||%s||\n\n" ..
         "💎 Gem %d   🪙 Gold %d\n" ..
@@ -19,6 +19,10 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, rcce
         "🔮 **Ranger Crystal:** %d ชิ้น\n" ..
         "📊 **Stats Key:** %d ชิ้น\n" ..
         "🎲 **Trait Reroll:** %d ชิ้น\n\n" ..
+        "🌌 **Ghoul Portals**\n" ..
+        "📍 **Portal I:** %d ชิ้น\n" ..
+        "📍 **Portal II:** %d ชิ้น\n" ..
+        "📍 **Portal III:** %d ชิ้น\n\n" ..
         "🏪 **Merchant**\n" ..
         "💰 **Dr. Megga Punk:** %d Gem (x%d)\n" ..
         "💰 **Cursed Finger:** %d Gem (x%d)\n" ..
@@ -33,6 +37,7 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, rcce
         itemValue.RangerCrystal or 0,
         itemValue.StatsKey or 0,
         itemValue.TraitReroll or 0,
+        portal1 or 0, portal2 or 0, portal3 or 0,
         merchantValue.DrMeggaPunk.Amount or 0, merchantValue.DrMeggaPunk.Quantity or 0,
         merchantValue.CursedFinger.Amount or 0, merchantValue.CursedFinger.Quantity or 0,
         merchantValue.RangerCrystal.Amount or 0, merchantValue.RangerCrystal.Quantity or 0,
@@ -41,7 +46,7 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, rcce
     )
 
     return {{
-        title = "🧛🏻Anime Rangers X [UPDATE 1]",
+        title = "[🩸 UPDATE 1] Anime Rangers X",
         description = description,
         color = 13369344,
         footer = {
@@ -58,10 +63,10 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, rcce
     }}
 end
 
-local function sendToDiscord(playerName, gemValue, goldValue, levelValue, rccellValue, itemValue, merchantValue)
+local function sendToDiscord(playerName, gemValue, goldValue, levelValue, rccellValue, itemValue, merchantValue, portal1, portal2, portal3)
     local payload = {
         content = nil,
-        embeds = createItemEmbed(playerName, gemValue, goldValue, levelValue, rccellValue, itemValue, merchantValue),
+        embeds = createItemEmbed(playerName, gemValue, goldValue, levelValue, rccellValue, itemValue, merchantValue, portal1, portal2, portal3),
         username = "Kantinan Hub",
         avatar_url = "https://img2.pic.in.th/pic/475981006_504564545992490_6167097446539934981_n.md.jpg"
     }
@@ -117,6 +122,11 @@ local function getMerchantData(playerDataFolder)
     }
 end
 
+local function getAmount(itemFolder, itemName)
+    local item = itemFolder:FindFirstChild(itemName)
+    return (item and item:FindFirstChild("Amount") and item.Amount.Value) or 0
+end
+
 local function checkItemsForPlayer(playerName)
     local playerDataFolder = game:GetService("ReplicatedStorage"):WaitForChild("Player_Data"):FindFirstChild(playerName)
     if not playerDataFolder then
@@ -131,34 +141,27 @@ local function checkItemsForPlayer(playerName)
         return
     end
 
-    local function getAmount(itemName)
-        local item = playerItemsFolder:FindFirstChild(itemName)
-        if item and item:FindFirstChild("Amount") then
-            return item.Amount.Value
-        else
-            return 0
-        end
-    end
-
     local itemInfo = {
-        CursedFinger = getAmount("Cursed Finger"),
-        DrMeggaPunk = getAmount("Dr. Megga Punk"),
-        RangerCrystal = getAmount("Ranger Crystal"),
-        StatsKey = getAmount("Stats Key"),
-        TraitReroll = getAmount("Trait Reroll")
+        CursedFinger = getAmount(playerItemsFolder, "Cursed Finger"),
+        DrMeggaPunk = getAmount(playerItemsFolder, "Dr. Megga Punk"),
+        RangerCrystal = getAmount(playerItemsFolder, "Ranger Crystal"),
+        StatsKey = getAmount(playerItemsFolder, "Stats Key"),
+        TraitReroll = getAmount(playerItemsFolder, "Trait Reroll")
     }
+
+    local portal1 = getAmount(playerItemsFolder, "Ghoul City Portal I")
+    local portal2 = getAmount(playerItemsFolder, "Ghoul City Portal II")
+    local portal3 = getAmount(playerItemsFolder, "Ghoul City Portal III")
 
     local gemValue = playerData:FindFirstChild("Gem") and playerData.Gem.Value or 0
     local goldValue = playerData:FindFirstChild("Gold") and playerData.Gold.Value or 0
     local levelValue = playerData:FindFirstChild("Level") and playerData.Level.Value or 0
-
-    -- ✅ เปลี่ยนจาก Egg เป็น RCCells
     local rccellValue = playerData:FindFirstChild("RCCells") and playerData.RCCells.Value or 0
 
     local merchantInfo = getMerchantData(playerDataFolder)
 
     print("📤 กำลังส่งข้อมูลไป Discord สำหรับผู้เล่น: " .. playerName)
-    sendToDiscord(playerName, gemValue, goldValue, levelValue, rccellValue, itemInfo, merchantInfo)
+    sendToDiscord(playerName, gemValue, goldValue, levelValue, rccellValue, itemInfo, merchantInfo, portal1, portal2, portal3)
 end
 
 task.spawn(function()
