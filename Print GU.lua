@@ -8,11 +8,11 @@ local placeId = game.PlaceId
 
 local url = "https://discord.com/api/webhooks/1372782698233335918/DuiWpxujmHXtVU1zd2pZnTbF9u0KsquHXFOKpjDvTOpUpgze9ex3FuTqWCjqO5X5xwXR"
 
-local function createItemEmbed(playerName, gemValue, goldValue, levelValue, ribeRCValue, itemValue, merchantValue)
+local function createItemEmbed(playerName, gemValue, goldValue, levelValue, rccellValue, itemValue, merchantValue)
     local description = string.format(
         "**⭐ ชื่อในเกม:** ||%s||\n\n" ..
         "💎 Gem %d   🪙 Gold %d\n" ..
-        "🎚 Level %d   🧪 Ribe's RC Cells %d\n\n" ..
+        "🎚 Level %d   🧪 RC Cells %d\n\n" ..
         "🛍️ **Items**\n" ..
         "👉🏻 **Cursed Finger:** %d ชิ้น\n" ..
         "🧑🏻‍⚕️ **Dr. Megga Punk:** %d ชิ้น\n" ..
@@ -27,7 +27,7 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, ribe
         "💰 **Trait Reroll:** %d Gem (x%d)\n",
         playerName or "Unknown",
         gemValue or 0, goldValue or 0,
-        levelValue or 0, ribeRCValue or 0,
+        levelValue or 0, rccellValue or 0,
         itemValue.CursedFinger or 0,
         itemValue.DrMeggaPunk or 0,
         itemValue.RangerCrystal or 0,
@@ -40,7 +40,7 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, ribe
         merchantValue.TraitReroll.Amount or 0, merchantValue.TraitReroll.Quantity or 0
     )
 
-    return { {
+    return {{
         title = "🧛🏻Anime Rangers X [UPDATE 1]",
         description = description,
         color = 13369344,
@@ -55,13 +55,13 @@ local function createItemEmbed(playerName, gemValue, goldValue, levelValue, ribe
         image = {
             url = "https://tr.rbxcdn.com/180DAY-0b31ac08cbd92f3d49bb8814f0834315/768/432/Image/Png/noFilter"
         }
-    } }
+    }}
 end
 
-local function sendToDiscord(playerName, gemValue, goldValue, levelValue, ribeRCValue, itemValue, merchantValue)
+local function sendToDiscord(playerName, gemValue, goldValue, levelValue, rccellValue, itemValue, merchantValue)
     local payload = {
         content = nil,
-        embeds = createItemEmbed(playerName, gemValue, goldValue, levelValue, ribeRCValue, itemValue, merchantValue),
+        embeds = createItemEmbed(playerName, gemValue, goldValue, levelValue, rccellValue, itemValue, merchantValue),
         username = "Kantinan Hub",
         avatar_url = "https://img2.pic.in.th/pic/475981006_504564545992490_6167097446539934981_n.md.jpg"
     }
@@ -152,17 +152,15 @@ local function checkItemsForPlayer(playerName)
     local goldValue = playerData:FindFirstChild("Gold") and playerData.Gold.Value or 0
     local levelValue = playerData:FindFirstChild("Level") and playerData.Level.Value or 0
 
-    -- ดึงค่าจาก Ribe's RC Cells แทน Egg
-    local ribeItem = playerItemsFolder:FindFirstChild("Ribe's RC Cells")
-    local ribeRCValue = ribeItem and ribeItem:FindFirstChild("Amount") and ribeItem.Amount.Value or 0
+    -- ✅ เปลี่ยนจาก Egg เป็น RCCells
+    local rccellValue = playerData:FindFirstChild("RCCells") and playerData.RCCells.Value or 0
 
     local merchantInfo = getMerchantData(playerDataFolder)
 
     print("📤 กำลังส่งข้อมูลไป Discord สำหรับผู้เล่น: " .. playerName)
-    sendToDiscord(playerName, gemValue, goldValue, levelValue, ribeRCValue, itemInfo, merchantInfo)
+    sendToDiscord(playerName, gemValue, goldValue, levelValue, rccellValue, itemInfo, merchantInfo)
 end
 
--- Loop ส่งข้อมูลทุก 60 วินาที
 task.spawn(function()
     while true do
         checkItemsForPlayer(player.Name)
@@ -170,7 +168,6 @@ task.spawn(function()
     end
 end)
 
--- ตรวจจับ Error และพา Teleport กลับเข้าเซิร์ฟเวอร์
 GuiService.ErrorMessageChanged:Connect(function(err)
     if err and err ~= "" then
         print("🚨 ตรวจพบ Error: " .. err)
